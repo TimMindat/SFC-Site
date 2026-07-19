@@ -1,15 +1,36 @@
 import { useState } from 'react';
 import { Menu, X, Globe } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useNavigation } from '../context/NavigationContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { language, toggleLanguage, t } = useLanguage();
+  const { currentPage, navigate } = useNavigation();
+
+  const handleNavClick = (href: string, page?: 'home' | 'products') => {
+    setIsOpen(false);
+    if (page) {
+      navigate(page);
+      return;
+    }
+    if (currentPage !== 'home') {
+      navigate('home');
+      // Small delay to let the home page render before scrolling
+      setTimeout(() => {
+        const el = document.querySelector(href);
+        el?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      const el = document.querySelector(href);
+      el?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const navLinks = [
     { key: 'nav.home', href: '#home' },
     { key: 'nav.about', href: '#about' },
-    { key: 'nav.products', href: '#products' },
+    { key: 'nav.products', href: '#products', page: 'products' as const },
     { key: 'nav.services', href: '#services' },
     { key: 'nav.contact', href: '#contact' },
   ];
@@ -18,19 +39,26 @@ export default function Navbar() {
     <nav className="fixed w-full top-0 z-50 bg-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-24">
-          <div className="flex-shrink-0 flex items-center gap-3">
+          <button
+            className="flex-shrink-0 flex items-center"
+            onClick={() => navigate('home')}
+          >
             <img src="/IMG_20260422_192521_463.png" alt="S.F.C Flash Company" className="h-20 md:h-24 w-auto" />
-          </div>
+          </button>
 
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <button
                 key={link.key}
-                href={link.href}
-                className="text-gray-800 hover:text-red-600 transition-colors duration-300 font-semibold"
+                onClick={() => handleNavClick(link.href, link.page)}
+                className={`font-semibold transition-colors duration-300 ${
+                  currentPage === 'products' && link.page === 'products'
+                    ? 'text-red-600'
+                    : 'text-gray-800 hover:text-red-600'
+                }`}
               >
                 {t(link.key)}
-              </a>
+              </button>
             ))}
           </div>
 
@@ -54,16 +82,15 @@ export default function Navbar() {
         </div>
 
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-2">
+          <div className="md:hidden pb-4 space-y-1">
             {navLinks.map((link) => (
-              <a
+              <button
                 key={link.key}
-                href={link.href}
-                className="block px-4 py-2 text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all rounded"
-                onClick={() => setIsOpen(false)}
+                onClick={() => handleNavClick(link.href, link.page)}
+                className="block w-full text-start px-4 py-2 text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all rounded"
               >
                 {t(link.key)}
-              </a>
+              </button>
             ))}
           </div>
         )}

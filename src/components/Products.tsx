@@ -1,8 +1,10 @@
-import { Printer, Zap, Package } from 'lucide-react';
+import { Printer, Zap, Package, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useNavigation } from '../context/NavigationContext';
 
 export default function Products() {
   const { language, t } = useLanguage();
+  const { navigate } = useNavigation();
 
   const products = [
     {
@@ -42,29 +44,40 @@ export default function Products() {
           <p className="text-lg text-gray-600">{t('products.subtitle')}</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
           {products.map((product, index) => {
             const Icon = product.icon;
             return (
-              <div
+              <button
                 key={index}
-                className="group bg-gradient-to-br from-gray-50 to-white p-8 rounded-lg border-2 border-gray-200 hover:border-red-600 hover:shadow-xl transition-all duration-300 overflow-hidden relative"
+                onClick={() => navigate('products')}
+                className="group bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border-2 border-gray-200 hover:border-red-600 hover:shadow-xl transition-all duration-300 overflow-hidden relative text-start"
               >
                 <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
                 <div className="relative z-10">
-                  <div className={`${product.color} w-16 h-16 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`${product.color} w-16 h-16 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <Icon size={32} className="text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">{t(product.titleKey)}</h3>
                   <p className="text-gray-600 leading-relaxed">{t(product.descKey)}</p>
-                  <div className={`mt-4 flex items-center gap-2 text-red-600 font-semibold group-hover:gap-4 transition-all duration-300 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+                  <div className="mt-4 flex items-center gap-2 text-red-600 font-semibold group-hover:gap-4 transition-all duration-300">
                     <span>{t('products.learnMore')}</span>
-                    <span>{language === 'ar' ? '←' : '→'}</span>
+                    {language === 'ar' ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
+        </div>
+
+        <div className="text-center">
+          <button
+            onClick={() => navigate('products')}
+            className="inline-flex items-center gap-3 px-10 py-4 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+          >
+            <span>{t('products.viewAll')}</span>
+            {language === 'ar' ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
+          </button>
         </div>
       </div>
     </section>
